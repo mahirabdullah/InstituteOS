@@ -1,37 +1,41 @@
-const Course = require('../models/courseModel');
+// C:\Users\MAHIR\Projects\sms\server\controllers\courseController.js
 
-// @desc    Get all courses
-// @route   GET /api/courses
-// @access  Private/Admin
-const getCourses = async (req, res) => {
-  const courses = await Course.find({}).populate('teacher', 'name');
-  res.json(courses);
-};
+const Course = require('../models/Course');
 
-// @desc    Add a new course
-// @route   POST /api/courses
-// @access  Private/Admin
-const addCourse = async (req, res) => {
+// Create a new course
+exports.createCourse = async (req, res) => {
   const { courseName, courseCode } = req.body;
-  const course = new Course({ courseName, courseCode });
-  const createdCourse = await course.save();
-  res.status(201).json(createdCourse);
-};
-
-// @desc    Assign a teacher to a course
-// @route   PUT /api/courses/:id/assign-teacher
-// @access  Private/Admin
-const assignTeacherToCourse = async (req, res) => {
-  const { teacherId } = req.body;
-  const course = await Course.findById(req.params.id);
-
-  if (course) {
-    course.teacher = teacherId;
-    const updatedCourse = await course.save();
-    res.json(updatedCourse);
-  } else {
-    res.status(404).json({ message: 'Course not found' });
+  try {
+    const newCourse = new Course({ courseName, courseCode });
+    const course = await newCourse.save();
+    res.json(course);
+  } catch (err) {
+    res.status(500).send('Server Error');
   }
 };
 
-module.exports = { getCourses, addCourse, assignTeacherToCourse };
+// Get all courses
+exports.getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find();
+    res.json(courses);
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+};
+
+// Delete a course
+exports.deleteCourse = async (req, res) => {
+  try {
+    let course = await Course.findById(req.params.id);
+    if (!course) return res.status(404).json({ msg: 'Course not found' });
+    
+    await Course.findByIdAndDelete(req.params.id);
+    res.json({ msg: 'Course removed' });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+};
+
+// You would add more functions here for assigning teachers/students, etc.
+// For example: assignTeacherToCourse, enrollStudentInCourse

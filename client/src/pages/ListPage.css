@@ -1,0 +1,63 @@
+/* C:\Users\MAHIR\Projects\sms\client\src\pages\ListPage.css */
+
+.add-form {
+    margin-bottom: 30px;
+}
+.add-form form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+.add-form input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-dark);
+    color: var(--primary-text);
+    flex-grow: 1;
+}
+.add-form button, .delete-btn {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    background-color: var(--accent-blue);
+    color: white;
+    font-weight: bold;
+}
+.delete-btn {
+    background-color: #ef4444; /* Red for delete */
+}
+
+.search-bar {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--primary-text);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table thead {
+    background-color: var(--sidebar-bg);
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+.profile-link {
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+.profile-link:hover {
+    text-decoration: underline;
+}
