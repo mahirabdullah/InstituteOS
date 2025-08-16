@@ -1,9 +1,7 @@
-// C:\Users\MAHIR\Projects\sms\client\src\pages\SignupPage.js
-
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
-import './LoginPage.css'; // We can reuse the login page's styles
+import './LoginPage.css';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -28,7 +26,7 @@ const SignupPage = () => {
     }
     try {
       await signup(name, email, password);
-      navigate('/dashboard'); // Redirect to dashboard on successful signup
+      navigate('/dashboard');
     } catch (err) {
       setError('User with this email already exists.');
       console.error(err);
@@ -37,6 +35,8 @@ const SignupPage = () => {
 
   return (
     <div className="login-container">
+      <h1 className="welcome-header">Welcome To InstituteOS</h1>
+      
       <div className="login-box">
         <div className="login-header">
           <h2>Create Your Account</h2>

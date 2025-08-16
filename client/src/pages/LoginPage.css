@@ -1,69 +1,71 @@
-/* C:\Users\MAHIR\Projects\sms\client\src\pages\LoginPage.css */
-
 .login-container {
   display: flex;
+  flex-direction: column; /* This stacks the title and form vertically */
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-image: url('https://i.imgur.com/9vw4d1I.jpg'); /* A royalty-free sky image */
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(to bottom, #ffffff, #e6f2ff);
+}
+
+.welcome-header {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1f2937; /* Dark text color */
+  text-align: center;
+  margin-bottom: 40px; /* Adds space between the title and the form */
 }
 
 .login-box {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-radius: 20px;
+  background: #ffffff;
+  border-radius: 12px;
   padding: 40px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
   color: #333;
 }
+
 .login-header h2 {
   font-size: 24px;
   text-align: center;
   margin-bottom: 10px;
 }
+
 .login-header p {
   text-align: center;
   color: #555;
   margin-bottom: 25px;
 }
+
 .input-group {
   margin-bottom: 15px;
 }
+
 .input-group input {
   width: 100%;
   padding: 12px 15px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  background: rgba(255, 255, 255, 0.8);
+  background: #f9fafb;
 }
+
 .login-button {
   width: 100%;
   padding: 15px;
   border: none;
-  background-color: #333;
+  background-color: #1f2937;
   color: white;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
 .login-button:hover {
-  background-color: #555;
+  background-color: #374151;
 }
-.forgot-password {
-  display: block;
-  text-align: right;
-  margin-bottom: 20px;
-  color: #555;
-  font-size: 14px;
-  text-decoration: none;
-}
+
 .error-message {
     color: #D8000C;
     background-color: #FFD2D2;
@@ -73,11 +75,17 @@
     text-align: center;
     margin-bottom: 15px;
 }
+
 .signup-link {
     text-align: center;
     margin-top: 15px;
 }
+
 .signup-link a {
-    color: #0056b3;
+    color: #3b82f6;
     font-weight: bold;
+    text-decoration: none;
+}
+.signup-link a:hover {
+    text-decoration: underline;
 }
