@@ -2,7 +2,7 @@
 
 const Course = require('../models/Course');
 
-// Create a new course
+// Create a new course - UPDATED FUNCTION
 exports.createCourse = async (req, res) => {
   const { courseName, courseCode } = req.body;
   try {
@@ -10,11 +10,22 @@ exports.createCourse = async (req, res) => {
     const course = await newCourse.save();
     res.json(course);
   } catch (err) {
+    // --- THIS IS THE NEW DIAGNOSTIC LOG ---
+    console.log("--- DATABASE SAVE ERROR ---");
+    console.log("The full error object from MongoDB is:", err);
+    // --- END OF LOG ---
+
+    // Check for the specific duplicate key error from MongoDB
+    if (err.code === 11000) {
+      return res.status(400).json({ msg: 'Database error: A course with this code already exists.' });
+    }
+    
+    // For any other errors, send a generic server error
     res.status(500).send('Server Error');
   }
 };
 
-// Get all courses
+// Get all courses - NO CHANGES
 exports.getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find();
@@ -24,7 +35,7 @@ exports.getAllCourses = async (req, res) => {
   }
 };
 
-// Delete a course
+// Delete a course - NO CHANGES
 exports.deleteCourse = async (req, res) => {
   try {
     let course = await Course.findById(req.params.id);

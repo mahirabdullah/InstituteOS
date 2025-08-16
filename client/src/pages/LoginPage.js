@@ -20,7 +20,6 @@ const LoginPage = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation check
     if (email === '' || password === '') {
       setError('Please enter both email and password.');
       return; 
@@ -37,6 +36,8 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
+      <h1 className="welcome-header">Welcome To InstituteOS</h1>
+
       <div className="login-box">
         <div className="login-header">
             <h2>Sign in with email</h2>
@@ -45,7 +46,6 @@ const LoginPage = () => {
         {error && <p className="error-message">{error}</p>}
 
         <form onSubmit={onSubmit} className="login-form">
-          {/* This is the Email input field */}
           <div className="input-group">
             <input
               type="email"
@@ -56,7 +56,6 @@ const LoginPage = () => {
             />
           </div>
 
-          {/* This is the Password input field */}
           <div className="input-group">
             <input
               type="password"

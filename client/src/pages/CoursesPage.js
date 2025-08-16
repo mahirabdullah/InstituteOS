@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar/Sidebar';
 import api from '../services/api';
-import './ListPage.css'; // A generic stylesheet for all list pages
+import './ListPage.css';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
   const [formData, setFormData] = useState({ courseName: '', courseCode: '' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -29,12 +30,16 @@ const CoursesPage = () => {
     try {
       const res = await api.post('/courses', formData);
       setCourses([res.data, ...courses]);
-      setFormData({ courseName: '', courseCode: '' }); // Clear form
+      setFormData({ courseName: '', courseCode: '' });
+      setIsFormVisible(false); // Hide form after submission
     } catch (err) {
-      console.error("Failed to add course", err);
+      // Added better error feedback
+      const errorMsg = err.response?.data?.msg || "Failed to add course";
+      alert(errorMsg);
+      console.error(err);
     }
   };
-
+  
   const deleteCourse = async (id) => {
     if (window.confirm('Are you sure you want to delete this course?')) {
         try {
@@ -55,47 +60,67 @@ const CoursesPage = () => {
     <div className="dashboard-container">
       <Sidebar />
       <main className="main-content">
-        <h1>Manage Courses</h1>
-        
-        {/* Add Course Form */}
-        <div className="list-container add-form">
-            <h2>Add New Course</h2>
-            <form onSubmit={onSubmit}>
-                <input type="text" name="courseName" value={formData.courseName} onChange={onChange} placeholder="Course Name" required />
-                <input type="text" name="courseCode" value={formData.courseCode} onChange={onChange} placeholder="Course Code (e.g., CS101)" required />
-                <button type="submit">Add Course</button>
-            </form>
+        <div className="list-page-header">
+          <h1>Manage Courses</h1>
+          <button onClick={() => setIsFormVisible(!isFormVisible)} className="add-button">
+            {isFormVisible ? 'Cancel' : '+ Add Course'}
+          </button>
         </div>
 
-        {/* Courses List */}
+        {isFormVisible && (
+          <div className="list-container" style={{marginBottom: '20px'}}>
+              {/* === UPDATED FORM STARTS HERE === */}
+              <form onSubmit={onSubmit} className="add-item-form">
+                <div className="form-grid">
+                  <div className="form-control">
+                    <label htmlFor="courseName">Course Name</label>
+                    <input id="courseName" type="text" name="courseName" value={formData.courseName} onChange={onChange} required />
+                  </div>
+                  <div className="form-control">
+                    <label htmlFor="courseCode">Course Code</label>
+                    <input id="courseCode" type="text" name="courseCode" value={formData.courseCode} onChange={onChange} required />
+                  </div>
+                </div>
+                <div className="form-actions">
+                  <button type="submit">Save Course</button>
+                </div>
+              </form>
+              {/* === UPDATED FORM ENDS HERE === */}
+          </div>
+        )}
+
         <div className="list-container">
-            <h2>Existing Courses</h2>
-            <input 
-              type="text" 
-              placeholder="Search courses..." 
-              className="search-bar"
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-            <table>
-              <thead>
-                <tr>
-                  <th>Course Name</th>
-                  <th>Course Code</th>
-                  <th>Actions</th>
+          <input 
+            type="text" 
+            placeholder="Search courses..." 
+            className="search-bar"
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          <table>
+            <thead>
+              <tr>
+                <th>Course Name</th>
+                <th>Course Code</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredCourses.map(course => (
+                <tr key={course._id}>
+                  <td>{course.courseName}</td>
+                  <td>{course.courseCode}</td>
+                  <td className="action-buttons">
+                    <button title="Edit">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button onClick={() => deleteCourse(course._id)} title="Delete">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredCourses.map(course => (
-                  <tr key={course._id}>
-                    <td>{course.courseName}</td>
-                    <td>{course.courseCode}</td>
-                    <td>
-                      <button className="delete-btn" onClick={() => deleteCourse(course._id)}>Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              ))}
+            </tbody>
+          </table>
         </div>
       </main>
     </div>

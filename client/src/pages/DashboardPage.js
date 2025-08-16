@@ -1,5 +1,3 @@
-// C:\Users\MAHIR\Projects\sms\client\src\pages\DashboardPage.js
-
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar/Sidebar';
 import api from '../services/api';
@@ -48,28 +46,38 @@ const DashboardPage = () => {
         
         <div className="stats-cards">
           <div className="card">
-            <h3>Total Courses</h3>
-            <p>{loading ? '...' : stats.courses}</p>
-          </div>
-          <div className="card">
             <h3>Total Students</h3>
-            <p>{loading ? '...' : stats.students}</p>
+            <p className="stat-number">{loading ? '...' : stats.students}</p>
           </div>
           <div className="card">
             <h3>Total Teachers</h3>
-            <p>{loading ? '...' : stats.teachers}</p>
+            <p className="stat-number">{loading ? '...' : stats.teachers}</p>
+          </div>
+          <div className="card">
+            <h3>Total Courses</h3>
+            <p className="stat-number">{loading ? '...' : stats.courses}</p>
           </div>
         </div>
 
-        {/* You can build out these list sections next */}
-        <div className="list-section">
-            <div className="list-container">
-                <h2>Recent Additions</h2>
-                <p>This section can show recently added students or teachers.</p>
+        <div className="dashboard-lists">
+            <div className="list-widget">
+                <h2>Recently Added Students</h2>
+                {/* You can build out the logic for these later */}
+                <table>
+                    <tbody>
+                        <tr><td>Student A</td></tr>
+                        <tr><td>Student B</td></tr>
+                    </tbody>
+                </table>
             </div>
-            <div className="list-container">
-                <h2>Quick Links</h2>
-                <p>This section can have links to add new items quickly.</p>
+            <div className="list-widget">
+                <h2>Course Overview</h2>
+                 <table>
+                    <tbody>
+                        <tr><td>Intro to Programming</td></tr>
+                        <tr><td>Database Systems</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
       </main>
