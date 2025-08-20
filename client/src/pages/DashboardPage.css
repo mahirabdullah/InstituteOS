@@ -42,8 +42,20 @@
 .dashboard-lists {
   margin-top: 30px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr; /* 1 column on small screens */
   gap: 20px;
+}
+/* 2 columns on medium screens */
+@media (min-width: 1024px) {
+    .dashboard-lists {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+/* 3 columns on large screens */
+@media (min-width: 1400px) {
+    .dashboard-lists {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 .list-widget {
     background-color: var(--card-bg);
@@ -67,4 +79,9 @@
 }
 .list-widget tr:last-child td {
     border-bottom: none;
+}
+.list-widget a {
+    text-decoration: none;
+    color: var(--accent-blue);
+    font-weight: 500;
 }

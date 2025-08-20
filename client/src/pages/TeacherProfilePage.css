@@ -1,5 +1,3 @@
-/* C:\Users\MAHIR\Projects\sms\client\src\pages\TeacherProfilePage.css */
-
 .back-link {
     display: inline-block;
     margin-bottom: 20px;
@@ -7,30 +5,18 @@
     text-decoration: none;
 }
 .teacher-email {
-    color: var(--secondary-text);
+    color: var(--secondary-text-dark);
     margin-top: -10px;
     margin-bottom: 30px;
 }
-.profile-details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
-.profile-details-grid ul {
+.list-container ul {
     list-style: none;
     padding: 0;
 }
-.profile-details-grid li {
-    background-color: var(--background-dark);
+.list-container li {
+    background-color: var(--background-light);
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
-}
-.profile-details-grid select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
     border: 1px solid var(--border-color);
-    background-color: var(--background-dark);
-    color: var(--primary-text);
 }

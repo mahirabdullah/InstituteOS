@@ -1,13 +1,22 @@
-// C:\Users\MAHIR\Projects\sms\server\routes\courses.js
-
 const express = require('express');
 const router = express.Router();
-const { createCourse, getAllCourses, deleteCourse } = require('../controllers/courseController');
-const auth = require('../middleware/authMiddleware'); // Import middleware
+const auth = require('../middleware/authMiddleware');
+const { 
+    createCourse, 
+    getAllCourses, 
+    deleteCourse, 
+    getCourseById,
+    assignTeacherToCourse,
+    enrollStudentInCourse,
+    updateCourse
+} = require('../controllers/courseController');
 
-// Add the 'auth' middleware before your controller functions
 router.post('/', auth, createCourse);
 router.get('/', auth, getAllCourses);
+router.get('/:id', auth, getCourseById);
 router.delete('/:id', auth, deleteCourse);
+router.put('/:id', auth, updateCourse); // --- NEW ROUTE ---
+router.post('/:id/assign-teacher', auth, assignTeacherToCourse);
+router.post('/:id/enroll-student', auth, enrollStudentInCourse);
 
 module.exports = router;

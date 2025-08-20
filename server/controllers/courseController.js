@@ -1,8 +1,7 @@
-// C:\Users\MAHIR\Projects\sms\server\controllers\courseController.js
-
 const Course = require('../models/Course');
+const Teacher = require('../models/Teacher');
+const Student = require('../models/Student');
 
-// Create a new course - UPDATED FUNCTION
 exports.createCourse = async (req, res) => {
   const { courseName, courseCode } = req.body;
   try {
@@ -10,32 +9,24 @@ exports.createCourse = async (req, res) => {
     const course = await newCourse.save();
     res.json(course);
   } catch (err) {
-    // --- THIS IS THE NEW DIAGNOSTIC LOG ---
-    console.log("--- DATABASE SAVE ERROR ---");
-    console.log("The full error object from MongoDB is:", err);
-    // --- END OF LOG ---
-
-    // Check for the specific duplicate key error from MongoDB
+    console.error(err.message);
     if (err.code === 11000) {
-      return res.status(400).json({ msg: 'Database error: A course with this code already exists.' });
+      return res.status(400).json({ msg: 'A course with this code already exists.' });
     }
-    
-    // For any other errors, send a generic server error
     res.status(500).send('Server Error');
   }
 };
 
-// Get all courses - NO CHANGES
 exports.getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find();
     res.json(courses);
   } catch (err) {
+    console.error(err.message);
     res.status(500).send('Server Error');
   }
 };
 
-// Delete a course - NO CHANGES
 exports.deleteCourse = async (req, res) => {
   try {
     let course = await Course.findById(req.params.id);
@@ -44,9 +35,86 @@ exports.deleteCourse = async (req, res) => {
     await Course.findByIdAndDelete(req.params.id);
     res.json({ msg: 'Course removed' });
   } catch (err) {
+    console.error(err.message);
     res.status(500).send('Server Error');
   }
 };
 
-// You would add more functions here for assigning teachers/students, etc.
-// For example: assignTeacherToCourse, enrollStudentInCourse
+exports.getCourseById = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id)
+      .populate('teachers', ['name', 'email'])
+      .populate('students', ['name', 'email']);
+    
+    if (!course) {
+      return res.status(404).json({ msg: 'Course not found' });
+    }
+    res.json(course);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.assignTeacherToCourse = async (req, res) => {
+    try {
+        const { teacherId } = req.body;
+        const courseId = req.params.id;
+        const course = await Course.findById(courseId);
+        const teacher = await Teacher.findById(teacherId);
+
+        if (!teacher || !course) return res.status(404).json({ msg: 'Teacher or Course not found' });
+        if (course.teachers.length >= 2) return res.status(400).json({ msg: 'Course cannot have more than 2 teachers.' });
+        if (!course.teachers.includes(teacherId)) course.teachers.push(teacherId);
+        if (!teacher.courses.includes(courseId)) teacher.courses.push(courseId);
+        await course.save();
+        await teacher.save();
+        const updatedCourse = await Course.findById(courseId).populate('teachers', ['name', 'email']);
+        res.json(updatedCourse.teachers);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.enrollStudentInCourse = async (req, res) => {
+    try {
+        const { studentId } = req.body;
+        const courseId = req.params.id;
+        const course = await Course.findById(courseId);
+        const student = await Student.findById(studentId);
+
+        if (!student || !course) return res.status(404).json({ msg: 'Student or Course not found' });
+        if (course.students.length >= 30) return res.status(400).json({ msg: 'Course cannot have more than 30 students.' });
+        if (!course.students.includes(studentId)) course.students.push(studentId);
+        if (!student.courses.includes(courseId)) student.courses.push(courseId);
+        await course.save();
+        await student.save();
+        const updatedCourse = await Course.findById(courseId).populate('students', ['name', 'email']);
+        res.json(updatedCourse.students);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+// --- NEW FUNCTION ---
+exports.updateCourse = async (req, res) => {
+  const { courseName, courseCode } = req.body;
+  try {
+    const duplicate = await Course.findOne({ courseCode, _id: { $ne: req.params.id } });
+    if (duplicate) {
+      return res.status(400).json({ msg: 'A course with this code already exists.' });
+    }
+    const updatedCourse = await Course.findByIdAndUpdate(
+      req.params.id,
+      { courseName, courseCode },
+      { new: true }
+    );
+    if (!updatedCourse) return res.status(404).json({ msg: 'Course not found' });
+    res.json(updatedCourse);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+};

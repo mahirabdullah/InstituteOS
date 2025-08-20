@@ -1,9 +1,6 @@
-// C:\Users\MAHIR\Projects\sms\server\controllers\teacherController.js
-
 const Teacher = require('../models/Teacher');
 const Course = require('../models/Course');
 
-// @desc    Create a new teacher
 exports.createTeacher = async (req, res) => {
   const { name, email } = req.body;
   try {
@@ -12,11 +9,13 @@ exports.createTeacher = async (req, res) => {
     res.json(teacher);
   } catch (err) {
     console.error(err.message);
+    if (err.code === 11000) {
+      return res.status(400).json({ msg: 'A teacher with this email already exists.' });
+    }
     res.status(500).send('Server Error');
   }
 };
 
-// @desc    Get all teachers
 exports.getAllTeachers = async (req, res) => {
   try {
     const teachers = await Teacher.find().populate('courses', ['courseName', 'courseCode']);
@@ -27,7 +26,6 @@ exports.getAllTeachers = async (req, res) => {
   }
 };
 
-// @desc    Get a single teacher by ID
 exports.getTeacherById = async (req, res) => {
   try {
     const teacher = await Teacher.findById(req.params.id).populate('courses', ['courseName', 'courseCode']);
@@ -39,15 +37,10 @@ exports.getTeacherById = async (req, res) => {
   }
 };
 
-
-// @desc    Delete a teacher
 exports.deleteTeacher = async (req, res) => {
   try {
     const teacher = await Teacher.findById(req.params.id);
     if (!teacher) return res.status(404).json({ msg: 'Teacher not found' });
-
-    // TODO: Also remove this teacher from any courses they are assigned to
-    
     await Teacher.findByIdAndDelete(req.params.id);
     res.json({ msg: 'Teacher removed' });
   } catch (err) {
@@ -56,33 +49,36 @@ exports.deleteTeacher = async (req, res) => {
   }
 };
 
-
-// @desc    Assign a course to a teacher
 exports.assignCourseToTeacher = async (req, res) => {
-  try {
-    const { courseId } = req.body;
-    const teacherId = req.params.id;
+    try {
+        const { courseId } = req.body;
+        const teacherId = req.params.id;
+        const teacher = await Teacher.findById(teacherId);
+        const course = await Course.findById(courseId);
 
-    const teacher = await Teacher.findById(teacherId);
-    const course = await Course.findById(courseId);
-
-    if (!teacher || !course) {
-        return res.status(404).json({ msg: 'Teacher or Course not found' });
-    }
-
-    // Add course to teacher's list if not already there
-    if (!teacher.courses.includes(courseId)) {
-        teacher.courses.push(courseId);
+        if (!teacher || !course) return res.status(404).json({ msg: 'Teacher or Course not found' });
+        if (!teacher.courses.includes(courseId)) teacher.courses.push(courseId);
+        if (!course.teachers.includes(teacherId)) course.teachers.push(teacherId);
         await teacher.save();
-    }
-
-    // Add teacher to course's list if not already there
-    if (!course.teachers.includes(teacherId)) {
-        course.teachers.push(teacherId);
         await course.save();
+        res.json(teacher);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
+};
 
-    res.json(teacher);
+// --- NEW FUNCTION ---
+exports.updateTeacher = async (req, res) => {
+  const { name, email } = req.body;
+  try {
+    const duplicate = await Teacher.findOne({ email, _id: { $ne: req.params.id } });
+    if (duplicate) {
+      return res.status(400).json({ msg: 'A teacher with this email already exists.' });
+    }
+    const updatedTeacher = await Teacher.findByIdAndUpdate(req.params.id, { name, email }, { new: true });
+    if (!updatedTeacher) return res.status(404).json({ msg: 'Teacher not found' });
+    res.json(updatedTeacher);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

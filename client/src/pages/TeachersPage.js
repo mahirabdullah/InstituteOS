@@ -1,25 +1,22 @@
-// C:\Users\MAHIR\Projects\sms\client\src\pages\TeachersPage.js
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar/Sidebar';
 import api from '../services/api';
-import './ListPage.css'; // Reusing the same stylesheet
+import './ListPage.css';
 
 const TeachersPage = () => {
   const [teachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
         const res = await api.get('/teachers');
         setTeachers(res.data);
-      } catch (err) {
-        console.error("Failed to fetch teachers", err);
-      }
+      } catch (err) { console.error("Failed to fetch teachers", err); }
     };
     fetchTeachers();
   }, []);
@@ -27,17 +24,40 @@ const TeachersPage = () => {
   const { name, email } = formData;
   const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  const handleEditClick = (teacher) => {
+    setEditingItem(teacher);
+    setFormData({ name: teacher.name, email: teacher.email });
+    setIsFormVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsFormVisible(false);
+    setEditingItem(null);
+    setFormData({ name: '', email: '' });
+  };
+
   const onSubmit = async e => {
     e.preventDefault();
-    try {
-      const res = await api.post('/teachers', formData);
-      setTeachers([res.data, ...teachers]);
-      setFormData({ name: '', email: '' });
-      setIsFormVisible(false);
-    } catch (err) {
-      const errorMsg = err.response?.data?.msg || "Failed to add teacher";
-      alert(errorMsg);
-      console.error(err);
+    if (editingItem) {
+      try {
+        const res = await api.put(`/teachers/${editingItem._id}`, formData);
+        setTeachers(teachers.map(teacher => (teacher._id === editingItem._id ? res.data : teacher)));
+        handleCancel();
+      } catch (err) {
+        const errorMsg = err.response?.data?.msg || "Failed to update teacher";
+        alert(errorMsg);
+        console.error(err);
+      }
+    } else {
+      try {
+        const res = await api.post('/teachers', formData);
+        setTeachers([res.data, ...teachers]);
+        handleCancel();
+      } catch (err) {
+        const errorMsg = err.response?.data?.msg || "Failed to add teacher";
+        alert(errorMsg);
+        console.error(err);
+      }
     }
   };
 
@@ -46,9 +66,7 @@ const TeachersPage = () => {
         try {
             await api.delete(`/teachers/${id}`);
             setTeachers(teachers.filter(teacher => teacher._id !== id));
-        } catch (err) {
-            console.error("Failed to delete teacher", err);
-        }
+        } catch (err) { console.error("Failed to delete teacher", err); }
     }
   };
 
@@ -63,14 +81,14 @@ const TeachersPage = () => {
       <main className="main-content">
         <div className="list-page-header">
           <h1>Manage Teachers</h1>
-          <button onClick={() => setIsFormVisible(!isFormVisible)} className="add-button">
+          <button onClick={() => { isFormVisible ? handleCancel() : setIsFormVisible(true) }} className="add-button">
             {isFormVisible ? 'Cancel' : '+ Add Teacher'}
           </button>
         </div>
 
         {isFormVisible && (
           <div className="list-container" style={{marginBottom: '20px'}}>
-              {/* === UPDATED FORM STARTS HERE === */}
+              <h2 style={{marginTop: 0, fontWeight: 500}}>{editingItem ? 'Edit Teacher' : 'Add New Teacher'}</h2>
               <form onSubmit={onSubmit} className="add-item-form">
                 <div className="form-grid">
                   <div className="form-control">
@@ -83,10 +101,9 @@ const TeachersPage = () => {
                   </div>
                 </div>
                 <div className="form-actions">
-                  <button type="submit">Save Teacher</button>
+                  <button type="submit">{editingItem ? 'Update Teacher' : 'Save Teacher'}</button>
                 </div>
               </form>
-              {/* === UPDATED FORM ENDS HERE === */}
           </div>
         )}
 
@@ -115,7 +132,7 @@ const TeachersPage = () => {
                   <td>{teacher.email}</td>
                   <td>{teacher.courses.length}</td>
                   <td className="action-buttons">
-                    <button title="Edit">
+                    <button onClick={() => handleEditClick(teacher)} title="Edit">
                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     </button>
                     <button onClick={() => deleteTeacher(teacher._id)} title="Delete">
