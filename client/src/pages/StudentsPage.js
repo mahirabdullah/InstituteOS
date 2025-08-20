@@ -1,25 +1,22 @@
-// C:\Users\MAHIR\Projects\sms\client\src\pages\StudentsPage.js
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar/Sidebar';
 import api from '../services/api';
-import './ListPage.css'; // Reusing the same stylesheet
+import './ListPage.css';
 
 const StudentsPage = () => {
   const [students, setStudents] = useState([]);
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         const res = await api.get('/students');
         setStudents(res.data);
-      } catch (err) {
-        console.error("Failed to fetch students", err);
-      }
+      } catch (err) { console.error("Failed to fetch students", err); }
     };
     fetchStudents();
   }, []);
@@ -27,17 +24,40 @@ const StudentsPage = () => {
   const { name, email } = formData;
   const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  const handleEditClick = (student) => {
+    setEditingItem(student);
+    setFormData({ name: student.name, email: student.email });
+    setIsFormVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsFormVisible(false);
+    setEditingItem(null);
+    setFormData({ name: '', email: '' });
+  };
+
   const onSubmit = async e => {
     e.preventDefault();
-    try {
-      const res = await api.post('/students', formData);
-      setStudents([res.data, ...students]);
-      setFormData({ name: '', email: '' });
-      setIsFormVisible(false);
-    } catch (err) {
-      const errorMsg = err.response?.data?.msg || "Failed to add student";
-      alert(errorMsg);
-      console.error(err);
+    if (editingItem) {
+      try {
+        const res = await api.put(`/students/${editingItem._id}`, formData);
+        setStudents(students.map(student => (student._id === editingItem._id ? res.data : student)));
+        handleCancel();
+      } catch (err) {
+        const errorMsg = err.response?.data?.msg || "Failed to update student";
+        alert(errorMsg);
+        console.error(err);
+      }
+    } else {
+      try {
+        const res = await api.post('/students', formData);
+        setStudents([res.data, ...students]);
+        handleCancel();
+      } catch (err) {
+        const errorMsg = err.response?.data?.msg || "Failed to add student";
+        alert(errorMsg);
+        console.error(err);
+      }
     }
   };
 
@@ -46,9 +66,7 @@ const StudentsPage = () => {
         try {
             await api.delete(`/students/${id}`);
             setStudents(students.filter(student => student._id !== id));
-        } catch (err) {
-            console.error("Failed to delete student", err);
-        }
+        } catch (err) { console.error("Failed to delete student", err); }
     }
   };
 
@@ -63,14 +81,14 @@ const StudentsPage = () => {
       <main className="main-content">
         <div className="list-page-header">
           <h1>Manage Students</h1>
-          <button onClick={() => setIsFormVisible(!isFormVisible)} className="add-button">
+          <button onClick={() => { isFormVisible ? handleCancel() : setIsFormVisible(true) }} className="add-button">
             {isFormVisible ? 'Cancel' : '+ Add Student'}
           </button>
         </div>
 
         {isFormVisible && (
           <div className="list-container" style={{marginBottom: '20px'}}>
-              {/* === UPDATED FORM STARTS HERE === */}
+              <h2 style={{marginTop: 0, fontWeight: 500}}>{editingItem ? 'Edit Student' : 'Add New Student'}</h2>
               <form onSubmit={onSubmit} className="add-item-form">
                 <div className="form-grid">
                   <div className="form-control">
@@ -83,10 +101,9 @@ const StudentsPage = () => {
                   </div>
                 </div>
                 <div className="form-actions">
-                  <button type="submit">Save Student</button>
+                  <button type="submit">{editingItem ? 'Update Student' : 'Save Student'}</button>
                 </div>
               </form>
-              {/* === UPDATED FORM ENDS HERE === */}
           </div>
         )}
 
@@ -109,11 +126,15 @@ const StudentsPage = () => {
             <tbody>
               {filteredStudents.map(student => (
                 <tr key={student._id}>
-                  <td>{student.name}</td>
+                  <td>
+                    <Link to={`/student/${student._id}`} className="profile-link">
+                      {student.name}
+                    </Link>
+                  </td>
                   <td>{student.email}</td>
                   <td>{student.courses.length}</td>
                   <td className="action-buttons">
-                    <button title="Edit">
+                    <button onClick={() => handleEditClick(student)} title="Edit">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     </button>
                     <button onClick={() => deleteStudent(student._id)} title="Delete">

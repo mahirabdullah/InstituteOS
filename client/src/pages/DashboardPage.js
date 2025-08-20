@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar/Sidebar';
 import api from '../services/api';
 import './DashboardPage.css';
 
 const DashboardPage = () => {
-  const [stats, setStats] = useState({
-    courses: 0,
-    students: 0,
-    teachers: 0,
-  });
+  const [stats, setStats] = useState({ students: 0, teachers: 0, courses: 0 });
   const [loading, setLoading] = useState(true);
+  
+  const [recentStudents, setRecentStudents] = useState([]);
+  const [recentTeachers, setRecentTeachers] = useState([]);
+  const [courseList, setCourseList] = useState([]);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        // Fetch all data in parallel for efficiency
         const [coursesRes, studentsRes, teachersRes] = await Promise.all([
           api.get('/courses'),
           api.get('/students'),
@@ -26,6 +26,14 @@ const DashboardPage = () => {
           students: studentsRes.data.length,
           teachers: teachersRes.data.length
         });
+
+        const sortedStudents = [...studentsRes.data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setRecentStudents(sortedStudents.slice(0, 5));
+
+        const sortedTeachers = [...teachersRes.data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setRecentTeachers(sortedTeachers.slice(0, 5));
+        
+        setCourseList(coursesRes.data.slice(0, 5));
         
       } catch (err) {
         console.error("Failed to fetch dashboard stats", err);
@@ -34,7 +42,7 @@ const DashboardPage = () => {
       }
     };
 
-    fetchStats();
+    fetchDashboardData();
   }, []);
 
   return (
@@ -62,11 +70,27 @@ const DashboardPage = () => {
         <div className="dashboard-lists">
             <div className="list-widget">
                 <h2>Recently Added Students</h2>
-                {/* You can build out the logic for these later */}
                 <table>
                     <tbody>
-                        <tr><td>Student A</td></tr>
-                        <tr><td>Student B</td></tr>
+                        {recentStudents.map(student => (
+                          <tr key={student._id}><td>{student.name}</td></tr>
+                        ))}
+                        {recentStudents.length === 0 && !loading && (
+                          <tr><td>No recent students.</td></tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+            <div className="list-widget">
+                <h2>Recently Joined Teachers</h2>
+                <table>
+                    <tbody>
+                        {recentTeachers.map(teacher => (
+                          <tr key={teacher._id}><td>{teacher.name}</td></tr>
+                        ))}
+                         {recentTeachers.length === 0 && !loading && (
+                          <tr><td>No recent teachers.</td></tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -74,8 +98,12 @@ const DashboardPage = () => {
                 <h2>Course Overview</h2>
                  <table>
                     <tbody>
-                        <tr><td>Intro to Programming</td></tr>
-                        <tr><td>Database Systems</td></tr>
+                       {courseList.map(course => (
+                          <tr key={course._id}><td>{course.courseName}</td></tr>
+                        ))}
+                        {courseList.length === 0 && !loading && (
+                          <tr><td>No courses created yet.</td></tr>
+                        )}
                     </tbody>
                 </table>
             </div>
