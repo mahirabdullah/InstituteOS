@@ -14,7 +14,7 @@ router.post('/', auth, createTeacher);
 router.get('/', auth, getAllTeachers);
 router.get('/:id', auth, getTeacherById);
 router.delete('/:id', auth, deleteTeacher);
-router.put('/:id', auth, updateTeacher); // --- NEW ROUTE ---
+router.put('/:id', auth, updateTeacher); 
 router.post('/:id/assign-course', auth, assignCourseToTeacher);
 
 module.exports = router;

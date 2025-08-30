@@ -41,6 +41,7 @@ const CoursesPage = () => {
       try {
         const res = await api.put(`/courses/${editingItem._id}`, formData);
         setCourses(courses.map(course => (course._id === editingItem._id ? res.data : course)));
+        alert('Course updated successfully!'); // <-- SUCCESS MESSAGE
         handleCancel();
       } catch (err) {
         const errorMsg = err.response?.data?.msg || "Failed to update course";
@@ -51,6 +52,7 @@ const CoursesPage = () => {
       try {
         const res = await api.post('/courses', formData);
         setCourses([res.data, ...courses]);
+        alert('Course saved successfully!'); // <-- SUCCESS MESSAGE
         handleCancel();
       } catch (err) {
         const errorMsg = err.response?.data?.msg || "Failed to add course";
@@ -65,7 +67,11 @@ const CoursesPage = () => {
         try {
             await api.delete(`/courses/${id}`);
             setCourses(courses.filter(course => course._id !== id));
-        } catch (err) { console.error("Failed to delete course", err); }
+            alert('Course deleted successfully!'); // <-- SUCCESS MESSAGE
+        } catch (err) { 
+            alert('Failed to delete course.');
+            console.error("Failed to delete course", err); 
+        }
     }
   };
 

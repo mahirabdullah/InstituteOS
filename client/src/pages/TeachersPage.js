@@ -42,6 +42,7 @@ const TeachersPage = () => {
       try {
         const res = await api.put(`/teachers/${editingItem._id}`, formData);
         setTeachers(teachers.map(teacher => (teacher._id === editingItem._id ? res.data : teacher)));
+        alert('Teacher updated successfully!'); // <-- SUCCESS MESSAGE
         handleCancel();
       } catch (err) {
         const errorMsg = err.response?.data?.msg || "Failed to update teacher";
@@ -52,6 +53,7 @@ const TeachersPage = () => {
       try {
         const res = await api.post('/teachers', formData);
         setTeachers([res.data, ...teachers]);
+        alert('Teacher saved successfully!'); // <-- SUCCESS MESSAGE
         handleCancel();
       } catch (err) {
         const errorMsg = err.response?.data?.msg || "Failed to add teacher";
@@ -66,7 +68,11 @@ const TeachersPage = () => {
         try {
             await api.delete(`/teachers/${id}`);
             setTeachers(teachers.filter(teacher => teacher._id !== id));
-        } catch (err) { console.error("Failed to delete teacher", err); }
+            alert('Teacher deleted successfully!'); // <-- SUCCESS MESSAGE
+        } catch (err) { 
+            alert('Failed to delete teacher.');
+            console.error("Failed to delete teacher", err); 
+        }
     }
   };
 
@@ -119,7 +125,7 @@ const TeachersPage = () => {
               <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Assigned Courses</th>
+                <th>Active Courses</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -130,7 +136,7 @@ const TeachersPage = () => {
                     <Link to={`/teacher/${teacher._id}`} className="profile-link">{teacher.name}</Link>
                   </td>
                   <td>{teacher.email}</td>
-                  <td>{teacher.courses.length}</td>
+                  <td>{teacher.courses.filter(c => c.status === 'Active').length}</td>
                   <td className="action-buttons">
                     <button onClick={() => handleEditClick(teacher)} title="Edit">
                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>

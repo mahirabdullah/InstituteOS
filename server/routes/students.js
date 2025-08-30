@@ -6,15 +6,15 @@ const {
   getAllStudents, 
   getStudentById,
   deleteStudent,
-  enrollStudentInCourse,
-  updateStudent
+  updateStudent,
+  getStudentProfileData
 } = require('../controllers/studentController');
 
 router.post('/', auth, createStudent);
 router.get('/', auth, getAllStudents);
+router.get('/:id/profile', auth, getStudentProfileData);
 router.get('/:id', auth, getStudentById);
 router.delete('/:id', auth, deleteStudent);
-router.put('/:id', auth, updateStudent); // --- NEW ROUTE ---
-router.post('/:id/enroll', auth, enrollStudentInCourse);
+router.put('/:id', auth, updateStudent);
 
 module.exports = router;

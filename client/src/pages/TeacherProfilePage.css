@@ -3,10 +3,11 @@
     margin-bottom: 20px;
     color: var(--accent-blue);
     text-decoration: none;
+    font-weight: 500;
 }
 .teacher-email {
     color: var(--secondary-text-dark);
-    margin-top: -10px;
+    margin-top: -15px;
     margin-bottom: 30px;
 }
 .list-container ul {
@@ -19,4 +20,35 @@
     border-radius: 5px;
     margin-bottom: 10px;
     border: 1px solid var(--border-color);
+}
+.list-container.full-width {
+    grid-column: 1 / -1;
+}
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+@media (min-width: 1024px) {
+    .profile-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+.list-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.list-container table th, .list-container table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+.list-container table th {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--secondary-text-dark);
+}
+.list-container table tr:last-child td {
+    border-bottom: none;
 }

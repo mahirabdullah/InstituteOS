@@ -1,3 +1,5 @@
+// C:\Users\MAHIR\Projects\sms\server\controllers\teacherController.js
+
 const Teacher = require('../models/Teacher');
 const Course = require('../models/Course');
 
@@ -18,7 +20,8 @@ exports.createTeacher = async (req, res) => {
 
 exports.getAllTeachers = async (req, res) => {
   try {
-    const teachers = await Teacher.find().populate('courses', ['courseName', 'courseCode']);
+    
+    const teachers = await Teacher.find().populate('courses', ['courseName', 'courseCode', 'status']);
     res.json(teachers);
   } catch (err) {
     console.error(err.message);
@@ -28,7 +31,9 @@ exports.getAllTeachers = async (req, res) => {
 
 exports.getTeacherById = async (req, res) => {
   try {
-    const teacher = await Teacher.findById(req.params.id).populate('courses', ['courseName', 'courseCode']);
+    
+    // We added 'status' to the list of fields to populate
+    const teacher = await Teacher.findById(req.params.id).populate('courses', ['courseName', 'courseCode', 'status']);
     if (!teacher) return res.status(404).json({ msg: 'Teacher not found' });
     res.json(teacher);
   } catch (err) {
@@ -43,6 +48,22 @@ exports.deleteTeacher = async (req, res) => {
     if (!teacher) return res.status(404).json({ msg: 'Teacher not found' });
     await Teacher.findByIdAndDelete(req.params.id);
     res.json({ msg: 'Teacher removed' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.updateTeacher = async (req, res) => {
+  const { name, email } = req.body;
+  try {
+    const duplicate = await Teacher.findOne({ email, _id: { $ne: req.params.id } });
+    if (duplicate) {
+      return res.status(400).json({ msg: 'A teacher with this email already exists.' });
+    }
+    const updatedTeacher = await Teacher.findByIdAndUpdate(req.params.id, { name, email }, { new: true });
+    if (!updatedTeacher) return res.status(404).json({ msg: 'Teacher not found' });
+    res.json(updatedTeacher);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -66,21 +87,4 @@ exports.assignCourseToTeacher = async (req, res) => {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
-};
-
-// --- NEW FUNCTION ---
-exports.updateTeacher = async (req, res) => {
-  const { name, email } = req.body;
-  try {
-    const duplicate = await Teacher.findOne({ email, _id: { $ne: req.params.id } });
-    if (duplicate) {
-      return res.status(400).json({ msg: 'A teacher with this email already exists.' });
-    }
-    const updatedTeacher = await Teacher.findByIdAndUpdate(req.params.id, { name, email }, { new: true });
-    if (!updatedTeacher) return res.status(404).json({ msg: 'Teacher not found' });
-    res.json(updatedTeacher);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
 };

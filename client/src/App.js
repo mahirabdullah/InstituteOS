@@ -1,5 +1,3 @@
-// C:\Users\MAHIR\Projects\sms\client\src\App.js
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
@@ -10,7 +8,9 @@ import TeachersPage from './pages/TeachersPage';
 import StudentsPage from './pages/StudentsPage'; 
 import TeacherProfilePage from './pages/TeacherProfilePage';
 import CourseDetailPage from './pages/CourseDetailPage';
-import StudentProfilePage from './pages/StudentProfilePage'; // <-- IMPORT NEW PAGE
+import StudentProfilePage from './pages/StudentProfilePage';
+import ResultListPage from './pages/ResultListPage';
+import ResultDetailPage from './pages/ResultDetailPage';
 import PrivateRoute from './components/routing/PrivateRoute';
 
 function App() {
@@ -26,7 +26,9 @@ function App() {
         <Route path="/students" element={<PrivateRoute><StudentsPage /></PrivateRoute>} />
         <Route path="/teacher/:id" element={<PrivateRoute><TeacherProfilePage /></PrivateRoute>} />
         <Route path="/course/:id" element={<PrivateRoute><CourseDetailPage /></PrivateRoute>} />
-        <Route path="/student/:id" element={<PrivateRoute><StudentProfilePage /></PrivateRoute>} /> {/* <-- ADD NEW ROUTE */}
+        <Route path="/student/:id" element={<PrivateRoute><StudentProfilePage /></PrivateRoute>} />
+        <Route path="/results" element={<PrivateRoute><ResultListPage /></PrivateRoute>} />
+        <Route path="/results/:id" element={<PrivateRoute><ResultDetailPage /></PrivateRoute>} />
         
         <Route path="/" element={<LoginPage />} />
       </Routes>

@@ -24,8 +24,27 @@ const TeacherProfilePage = () => {
     fetchTeacherData();
   }, [id]);
 
-  if (loading) return <div>Loading...</div>;
-  if (!teacher) return <div>Teacher not found.</div>;
+  if (loading) {
+    return (
+      <div className="dashboard-container">
+        <Sidebar />
+        <main className="main-content">Loading...</main>
+      </div>
+    );
+  }
+
+  if (!teacher) {
+    return (
+      <div className="dashboard-container">
+        <Sidebar />
+        <main className="main-content">Teacher not found.</main>
+      </div>
+    );
+  }
+
+  // Filter courses into active and completed lists
+  const activeCourses = teacher.courses.filter(course => course.status === 'Active');
+  const completedCourses = teacher.courses.filter(course => course.status === 'Completed');
 
   return (
     <div className="dashboard-container">
@@ -34,18 +53,33 @@ const TeacherProfilePage = () => {
         <Link to="/teachers" className="back-link">← Back to Teachers</Link>
         <h1>{teacher.name}'s Profile</h1>
         <p className="teacher-email">{teacher.email}</p>
+        
+        <div className="profile-grid">
+            <div className="list-container">
+                <h2>Active Courses</h2>
+                {activeCourses.length > 0 ? (
+                    <ul>
+                        {activeCourses.map(course => (
+                            <li key={course._id}>{course.courseName} ({course.courseCode})</li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No active courses assigned.</p>
+                )}
+            </div>
 
-        <div className="list-container">
-            <h2>Assigned Courses</h2>
-            {teacher.courses.length > 0 ? (
-                <ul>
-                    {teacher.courses.map(course => (
-                        <li key={course._id}>{course.courseName} ({course.courseCode})</li>
-                    ))}
-                </ul>
-            ) : (
-                <p>No courses assigned yet.</p>
-            )}
+            <div className="list-container">
+                <h2>Previously Taught Courses</h2>
+                {completedCourses.length > 0 ? (
+                    <ul>
+                        {completedCourses.map(course => (
+                            <li key={course._id}>{course.courseName} ({course.courseCode})</li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No completed courses.</p>
+                )}
+            </div>
         </div>
       </main>
     </div>

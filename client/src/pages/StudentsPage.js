@@ -42,6 +42,7 @@ const StudentsPage = () => {
       try {
         const res = await api.put(`/students/${editingItem._id}`, formData);
         setStudents(students.map(student => (student._id === editingItem._id ? res.data : student)));
+        alert('Student updated successfully!'); // <-- SUCCESS MESSAGE
         handleCancel();
       } catch (err) {
         const errorMsg = err.response?.data?.msg || "Failed to update student";
@@ -52,6 +53,7 @@ const StudentsPage = () => {
       try {
         const res = await api.post('/students', formData);
         setStudents([res.data, ...students]);
+        alert('Student saved successfully!'); // <-- SUCCESS MESSAGE
         handleCancel();
       } catch (err) {
         const errorMsg = err.response?.data?.msg || "Failed to add student";
@@ -66,7 +68,11 @@ const StudentsPage = () => {
         try {
             await api.delete(`/students/${id}`);
             setStudents(students.filter(student => student._id !== id));
-        } catch (err) { console.error("Failed to delete student", err); }
+            alert('Student deleted successfully!'); // <-- SUCCESS MESSAGE
+        } catch (err) { 
+            alert('Failed to delete student.');
+            console.error("Failed to delete student", err); 
+        }
     }
   };
 
@@ -119,7 +125,7 @@ const StudentsPage = () => {
               <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Enrolled Courses</th>
+                <th>Active Courses</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -132,7 +138,7 @@ const StudentsPage = () => {
                     </Link>
                   </td>
                   <td>{student.email}</td>
-                  <td>{student.courses.length}</td>
+                  <td>{student.courses.filter(c => c.status === 'Active').length}</td>
                   <td className="action-buttons">
                     <button onClick={() => handleEditClick(student)} title="Edit">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>

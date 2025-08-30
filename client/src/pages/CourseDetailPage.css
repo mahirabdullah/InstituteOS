@@ -15,6 +15,10 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 30px;
+    margin-bottom: 30px;
+}
+.list-container.full-width {
+    grid-column: 1 / -1;
 }
 @media (min-width: 1024px) {
     .detail-grid {
@@ -33,6 +37,9 @@
 .item-list li {
     padding: 10px;
     border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .item-list li:last-child {
     border-bottom: none;
@@ -49,7 +56,44 @@
     font-size: 16px;
     background-color: #fff;
 }
-.list-container > p {
+.marks-table .marks-input {
+    width: 80px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+.complete-course-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-align: center;
+}
+.complete-course-section p {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+.complete-button {
+    background-color: var(--accent-red);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
     font-weight: 500;
-    color: var(--secondary-text-dark);
+    cursor: pointer;
+}
+.remove-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--accent-red);
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 5px;
+}
+.remove-btn.icon-btn {
+    font-size: 16px;
 }

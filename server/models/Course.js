@@ -12,8 +12,12 @@ const CourseSchema = new mongoose.Schema({
     unique: true,
     trim: true 
   },
+  status: {
+    type: String,
+    enum: ['Active', 'Completed'],
+    default: 'Active'
+  },
   teachers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Teacher' }],
-  students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Course', CourseSchema);
